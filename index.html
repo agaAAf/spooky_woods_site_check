@@ -14,7 +14,6 @@
 			text-align: center;
 			background-color: black;
 		}
-
 		#canvas {
 			display: block;
 			margin: 0;
@@ -47,8 +46,11 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			background-color: black; /* Black background */
+			transition: opacity 1s ease; /* Fade-out transition */
+			opacity: 1; /* Start fully visible */
 			/* don't consume click events - make children visible explicitly */
-			visibility: hidden;
+			visibility: visible;
 		}
 		
 		#status-progress {
@@ -72,14 +74,15 @@
 		#status-progress-inner {
 			height: 100%;
 			width: 0;
-			background-color: #ffffff;
+			background-color: #ffffff; /* White loading bar */
 			border: none;
-			border-radius: 999px;
+			border-radius: 999px; /* Rounded corners */
 			transition: width 0.4s ease;
 			box-shadow: none;
 		}
 
 		#status-indeterminate {
+			display: none !important; /* Hide circular loader completely */
 			height: 42px;
 			visibility: visible;
 			position: relative;
@@ -110,17 +113,32 @@
 			visibility: visible;
 			padding: 4px 6px;
 			visibility: visible;
+			background-color: black;
+			color: white;
 		}
-		
+		#status {
+			flex-direction: column;
+		}
+
 		#status-logo {
 			margin-bottom: 20px;
-			visibility: visible;
+			display: none;
+			text-align: center; /* Ensure logo is centered */
+			width: 100%; /* Take full width for centering */
 		}
 
 		#status-logo img {
 			max-width: 240px;
 			width: 60%;
 			height: auto;
+			display: block; /* Make it a block element */
+			margin: 0 auto; /* Center horizontally */
+			image-rendering: pixelated; /* Turn off filtering */
+		}
+
+		/* Fade-out class */
+		#status.fade-out {
+			opacity: 0;
 		}
 	</style>
 <link id='-gd-engine-icon' rel='icon' type='image/png' href='index.icon.png' />
@@ -162,7 +180,8 @@
 			var statusProgressInner = document.getElementById('status-progress-inner');
 			var statusIndeterminate = document.getElementById('status-indeterminate');
 			var statusNotice = document.getElementById('status-notice');
-
+			var statusLogo = document.getElementById('status-logo');
+			var statusContainer = document.getElementById('status');
 			var initializing = true;
 			var statusMode = 'hidden';
 
@@ -180,17 +199,23 @@
 				[statusProgress, statusIndeterminate, statusNotice].forEach(elem => {
 					elem.style.display = 'none';
 				});
+				if (statusLogo) statusLogo.style.display = 'none';
 				animationCallbacks = animationCallbacks.filter(function(value) {
 					return (value != animateStatusIndeterminate);
 				});
 				switch (mode) {
 					case 'progress':
 						statusProgress.style.display = 'block';
+						if (statusLogo) statusLogo.style.display = 'block';
 						break;
 					case 'indeterminate':
-						statusIndeterminate.style.display = 'block';
-						animationCallbacks.push(animateStatusIndeterminate);
-						break;
+						// Skip showing the circular loader by going directly to progress mode
+						// Show progress bar with 0% instead
+						statusProgressInner.style.width = '0%';
+						statusProgress.style.display = 'block';
+						if (statusLogo) statusLogo.style.display = 'block';
+						statusMode = 'progress'; // Set mode to progress instead of indeterminate
+						return; // Exit early to not set statusMode to indeterminate
 					case 'notice':
 						statusNotice.style.display = 'block';
 						break;
@@ -234,7 +259,10 @@
 			if (!Engine.isWebGLAvailable()) {
 				displayFailureNotice('WebGL not available');
 			} else {
-				setStatusMode('indeterminate');
+				// Start with progress mode instead of indeterminate
+				setStatusMode('progress');
+				statusProgressInner.style.width = '0%';
+				
 				engine.startGame({
 					'onProgress': function (current, total) {
 						if (total > 0) {
@@ -243,20 +271,26 @@
 							if (current === total) {
 								// wait for progress bar animation
 								setTimeout(() => {
-									setStatusMode('indeterminate');
+									// Do nothing, stay in progress mode until complete
 								}, 500);
 							}
 						} else {
-							setStatusMode('indeterminate');
+							setStatusMode('progress');
 						}
 					},
 				}).then(() => {
-					setStatusMode('hidden');
-					initializing = false;
+					// Add fade-out class to status container
+					statusContainer.classList.add('fade-out');
+					
+					// After fade animation completes, hide the status container
+					setTimeout(() => {
+						setStatusMode('hidden');
+						initializing = false;
+						statusContainer.style.visibility = 'hidden';
+					}, 1000); // Match the transition duration (1s)
 				}, displayFailureNotice);
 			}
 		})();
 	//]]></script>
 </body>
 </html>
-
