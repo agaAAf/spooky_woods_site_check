@@ -34,7 +34,7 @@
 			box-shadow: 0 0 1px 1px #2f2d35;
 		}
 
-
+		
 		/* Status display
 		 * ============== */
 
@@ -50,16 +50,17 @@
 			/* don't consume click events - make children visible explicitly */
 			visibility: hidden;
 		}
-
+		
 		#status-progress {
-			width: 366px;
-			height: 7px;
-			background-color: #38363A;
-			border: 1px solid #444246;
-			padding: 1px;
-			box-shadow: 0 0 2px 1px #1B1C22;
-			border-radius: 2px;
+			width: 360px;
+			height: 10px;
+			background-color: rgba(255, 255, 255, 0.25);
+			border: none;
+			padding: 0;
+			border-radius: 999px;
+			box-shadow: none;
 			visibility: visible;
+			overflow: hidden;
 		}
 
 		@media only screen and (orientation:portrait) {
@@ -71,12 +72,11 @@
 		#status-progress-inner {
 			height: 100%;
 			width: 0;
-			box-sizing: border-box;
-			transition: width 0.5s linear;
-			background-color: #202020;
-			border: 1px solid #222223;
-			box-shadow: 0 0 1px 1px #27282E;
-			border-radius: 3px;
+			background-color: #ffffff;
+			border: none;
+			border-radius: 999px;
+			transition: width 0.4s ease;
+			box-shadow: none;
 		}
 
 		#status-indeterminate {
@@ -111,6 +111,17 @@
 			padding: 4px 6px;
 			visibility: visible;
 		}
+		
+		#status-logo {
+			margin-bottom: 20px;
+			visibility: visible;
+		}
+
+		#status-logo img {
+			max-width: 240px;
+			width: 60%;
+			height: auto;
+		}
 	</style>
 <link id='-gd-engine-icon' rel='icon' type='image/png' href='index.icon.png' />
 <link rel='apple-touch-icon' href='index.apple-touch-icon.png'/>
@@ -122,6 +133,9 @@
 		Please try updating or use a different browser.
 	</canvas>
 	<div id='status'>
+		<div id="status-logo">
+			<img src="logo.png" alt="Logo" />
+		</div>
 		<div id='status-progress' style='display: none;' oncontextmenu='event.preventDefault();'><div id ='status-progress-inner'></div></div>
 		<div id='status-indeterminate' style='display: none;' oncontextmenu='event.preventDefault();'>
 			<div></div>
@@ -139,7 +153,7 @@
 	<script type='text/javascript' src='index.js'></script>
 	<script type='text/javascript'>//<![CDATA[
 
-		const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":764352,"index.wasm":13788612},"focusCanvas":true,"gdnativeLibs":[]};
+		const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":767392,"index.wasm":13788612},"focusCanvas":true,"gdnativeLibs":[]};
 		var engine = new Engine(GODOT_CONFIG);
 
 		(function() {
